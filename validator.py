@@ -16,7 +16,7 @@ from pydantic import (BaseModel as BM, constr,
                       NonNegativeInt, NonNegativeFloat,
                       model_validator, field_validator)
 
-from .exceptions import BadRequestError
+from exceptions import BadRequestError
 
 
 or_filter_regex = r'\|(.*?)\*'

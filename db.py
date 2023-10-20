@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 
 from aws_secretsmanager_caching import SecretCache, InjectKeywordedSecretString
 
-from .exceptions import InternalServerError, NotFoundError
+from exceptions import InternalServerError, NotFoundError
 
 
 def get_secret_cache():
