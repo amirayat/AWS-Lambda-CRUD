@@ -2,10 +2,6 @@
 This module contains RDS queries
 """
 
-
-import pytz
-from datetime import datetime
-
 from psycopg2 import sql, connect
 from psycopg2.extras import RealDictCursor
 
