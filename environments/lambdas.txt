@@ -1,0 +1,4 @@
+AWS-Lambda-CRUD::main::GET
+AWS-Lambda-CRUD::main::POST
+AWS-Lambda-CRUD::main::PUT
+AWS-Lambda-CRUD::main::DELETE

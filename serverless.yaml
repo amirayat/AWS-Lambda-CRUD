@@ -1,0 +1,199 @@
+service: AWS-Lambda-CRUD
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  useDotenv: true
+  stage: ${opt:stage}
+  region: us-east-1
+  profile: default
+  stackName: AWS-Lambda-CRUD
+  deploymentMethod: direct
+  configValidationMode: warn
+  deploymentPrefix: amirayat20@gmail.com
+  deploymentBucket: ${file(./environments/${opt:stage}.json):DEPLOYMENT_BUCKET}
+  iam:
+    role: CustomRole
+  apiGateway:
+    restApiId: ${file(./environments/${opt:stage}.json):REST_API_ID}
+    restApiRootResourceId: ${file(./environments/${opt:stage}.json):ROOT_RESOURCE_ID}
+    restApiResources:
+      /products: ${file(./environments/${opt:stage}.json):PRODUCTS_RESOURCE_ID}
+  tracing:
+    lambda: false
+
+
+# lambda config
+functions:
+  main:
+    handler: main.lambda_handler
+    memorySize: 128
+    runtime: python3.8
+    logRetentionInDays: 14
+    versionFunctions: true
+    timeout: 3
+    environment:
+      deployment: ${file(./environments/${opt:stage}.json):LAMBDA_ENV_DEPLOYMENT}
+    ephemeralStorageSize: 512
+    name: main
+    description: Sample 
+    architecture: x86_64
+    layers:
+      - arn:aws:lambda:us-east-1:${file(./environments/${opt:stage}.json):AWS_ACCOUNT_ID}:layer:pydantic:2
+      - arn:aws:lambda:us-east-1:${file(./environments/${opt:stage}.json):AWS_ACCOUNT_ID}:layer:psycopg-jwt-pytz:4
+    
+    events:
+      - http:
+          path: products/crud
+          method: get
+          integration: lambda
+          cors:
+            origin: '*'
+            headers: '*'
+          private: false
+          existing: true
+          authorizer:
+            type: ${file(./environments/${opt:stage}.json):AUTHORIZER_TYPE}
+            authorizerId: '${file(./environments/${opt:stage}.json):AUTHORIZER_ID}'
+            existing: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template:
+              application/x-www-form-urlencoded: null
+              application/json: '{
+                                  "method": "$context.httpMethod",
+                                  "headers": {
+                                    #foreach($param in $input.params().header.keySet())
+                                    "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+                                    #if($foreach.hasNext),#end
+                                    #end
+                                  },
+                                  "queryParams" : {
+                                    #foreach($param in $input.params().querystring.keySet())
+                                    "$param": "$util.escapeJavaScript($input.params().querystring.get($param))"
+                                    #if($foreach.hasNext),#end
+                                    #end
+                                  },
+                                  "authorizer_context":{
+                                    "user_id": "$context.authorizer.user_id"
+                                  }
+                                }'
+      - http:
+          path: products/crud
+          method: post
+          integration: lambda
+          cors:
+            origin: '*'
+            headers: '*'
+          private: false
+          existing: true
+          authorizer:
+            type: ${file(./environments/${opt:stage}.json):AUTHORIZER_TYPE}
+            authorizerId: '${file(./environments/${opt:stage}.json):AUTHORIZER_ID}'
+            existing: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template:
+              application/x-www-form-urlencoded: null
+              application/json: '{
+                                  "method": "$context.httpMethod",
+                                  "body" : $input.json("$"),
+                                  "headers": {
+                                    #foreach($param in $input.params().header.keySet())
+                                    "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+                                    #if($foreach.hasNext),#end
+                                    #end
+                                  },
+                                  "authorizer_context":{
+                                    "user_id": "$context.authorizer.user_id"
+                                  }
+                                }'
+      - http:
+          path: products/crud
+          method: put
+          integration: lambda
+          cors:
+            origin: '*'
+            headers: '*'
+          private: false
+          existing: true
+          authorizer:
+            type: ${file(./environments/${opt:stage}.json):AUTHORIZER_TYPE}
+            authorizerId: '${file(./environments/${opt:stage}.json):AUTHORIZER_ID}'
+            existing: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template:
+              application/x-www-form-urlencoded: null
+              application/json: '{
+                                  "method": "$context.httpMethod",
+                                  "body" : $input.json("$"),
+                                  "headers": {
+                                    #foreach($param in $input.params().header.keySet())
+                                    "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+                                    #if($foreach.hasNext),#end
+                                    #end
+                                  },
+                                  "authorizer_context":{
+                                    "user_id": "$context.authorizer.user_id"
+                                  }
+                                }'
+      - http:
+          path: products/crud
+          method: delete
+          integration: lambda
+          cors:
+            origin: '*'
+            headers: '*'
+          private: false
+          existing: true
+          authorizer:
+            type: ${file(./environments/${opt:stage}.json):AUTHORIZER_TYPE}
+            authorizerId: '${file(./environments/${opt:stage}.json):AUTHORIZER_ID}'
+            existing: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template:
+              application/x-www-form-urlencoded: null
+              application/json: '{
+                                  "method": "$context.httpMethod",
+                                  "body" : $input.json("$"),
+                                  "headers": {
+                                    #foreach($param in $input.params().header.keySet())
+                                    "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+                                    #if($foreach.hasNext),#end
+                                    #end
+                                  },
+                                  "authorizer_context":{
+                                    "user_id": "$context.authorizer.user_id"
+                                  }
+                                }'
+
+
+resources:
+  Resources:
+    CustomRole:
+      Type: AWS::IAM::Role
+      Properties:
+        ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+          - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+          - 'arn:aws:iam::aws:policy/SecretsManagerReadWrite'
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - 'lambda.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+            - Effect: Allow
+              Principal:
+                Service:
+                  - 'apigateway.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+              Condition:
+                ArnLike:
+                  AWS:SourceArn: arn:aws:execute-api:us-east-1:${file(./environments/${opt:stage}.json):AWS_ACCOUNT_ID}:${file(./environments/${opt:stage}.json):REST_API_ID}/*/*/*

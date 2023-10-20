@@ -1,0 +1,10 @@
+{
+  "DEPLOYMENT_BUCKET": "production.service.deployment.bucket",
+  "REST_API_ID": "qd7517z1ic",
+  "ROOT_RESOURCE_ID": "vcs73e4k35",
+  "PRODUCTS_RESOURCE_ID": "sqen4h",
+  "AWS_ACCOUNT_ID": "480279031583",
+  "AUTHORIZER_ID": "wobdnh",
+  "AUTHORIZER_TYPE": "CUSTOM",
+  "LAMBDA_ENV_DEPLOYMENT": "production"
+}
