@@ -19,19 +19,19 @@ class ActionMLSRF:
         return result
 
     @staticmethod
-    def put(body) -> None:
-        body = Body(**body).model_dump()
+    def put(data) -> None:
+        body = Body(**data).model_dump()
         with RDB() as rdb:
             rdb.update(body)
 
     @staticmethod
-    def post(body) -> None:
-        body = Body(**body).model_dump()
+    def post(data) -> None:
+        body = Body(**data).model_dump()
         with RDB() as rdb:
             rdb.insert(body)
 
     @staticmethod
-    def delete(body) -> None:
-        body = Body(**body).model_dump()
+    def delete(data) -> None:
+        body = Body(**data).model_dump()
         with RDB() as rdb:
             rdb.delete(body)
