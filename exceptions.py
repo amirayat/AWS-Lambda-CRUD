@@ -1,3 +1,9 @@
+"""
+This module contains error exceptions
+to handle the right request status code 
+in AWS API gateway template
+"""
+
 class InternalServerError(Exception):
     message = """
     We apologize for the inconvenience, 
