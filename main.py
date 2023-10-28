@@ -2,7 +2,7 @@
 This module contains lambda function
 """
 
-from actions import ActionMLSRF
+from actions import Action
 import sys
 
 sys.tracebacklimit = 0
@@ -16,16 +16,16 @@ def lambda_handler(event, context):
     response = dict()
 
     if method == 'GET':
-        result = ActionMLSRF.get(query_params)
+        result = Action.get(query_params)
         response['result'] = result
     elif method == 'POST':
-        ActionMLSRF.post(body)
+        Action.post(body)
         response['result'] = "Data has been inserted successfully."
     elif method == 'PUT':
-        ActionMLSRF.put(body)
+        Action.put(body)
         response['result'] = "Data has been updated successfully."
     elif method == 'DELETE':
-        ActionMLSRF.delete(body)
+        Action.delete(body)
         response['result'] = "Data has been removed successfully."
 
     response['is_success'] = True

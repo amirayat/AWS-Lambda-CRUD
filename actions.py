@@ -7,7 +7,7 @@ from validator import Body, validate_query_params
 from db import RDB
 
 
-class ActionMLSRF:
+class Action:
     """
     action class for request methods
     """
